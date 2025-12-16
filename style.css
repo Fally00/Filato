@@ -1,0 +1,415 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Cairo", sans-serif;
+    padding: 50px 100px;
+    height: 100vh;
+    background-image: linear-gradient(90deg, #884bcd3b, #960a7a3b);
+    position: relative;
+}
+
+.title-block {
+    display: flex;
+    gap: 10px;
+}
+
+.title-block i {
+    font-size: 24px;
+    color: transparent;
+    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-clip: text;
+}
+
+.loading {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    transition: 0.5s;
+    z-index: 4;
+}
+
+.loading img {
+    width: 200px;
+    border-radius: 20px;
+}
+
+.loading .circle {
+    width: 75px;
+    height: 75px;
+    border-radius: 1000px;
+    border: 7px solid #884bcd;
+    border-top-color: transparent;
+    position: relative;
+    animation: r 1s ease-in-out infinite;
+}
+
+.loading .circle::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    background-color: #884bcd;
+    border-radius: 1000px;
+}
+
+.loading .circle::after {
+    content: "";
+    width: 7px;
+    height: 7px;
+    position: absolute;
+    top: 3px;
+    right: 3px;
+    background-color: #884bcd;
+    border-radius: 1000px;
+}
+
+@keyframes r  {
+    from {
+        rotate: 0deg;
+    }
+
+    to {
+        rotate: 360deg;
+    }
+}
+
+.overlay {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(128, 128, 128, 0.6);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 4;
+}
+
+.message {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+    width: 475px;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    padding: 30px;
+    border-radius: 10px;
+}
+
+.message .title-block {
+    justify-content: space-between;
+}
+
+.message .title-block h2 span {
+    font-size: 15px;
+}
+
+.message .input-box {
+    display: flex;
+    gap: 20px;
+}
+
+.message .input-box #valueInput {
+    flex-grow: 1;
+    padding: 5px 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 2px solid;
+    outline: none;
+    transition: 0.3s;
+}
+
+.message .input-box #valueInput:focus {
+    border-color: #884bcd;
+}
+
+.message .input-box #enterButton {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.message .input-box #enterButton:hover {
+    background-color: transparent;
+    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+}
+
+.message button {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.message .last-span {
+    color: gray;
+    font-style: italic;
+}
+
+main {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 30px;
+}
+
+main > div {
+    background-color: white;
+    border-radius: 20px;
+    padding: 30px;
+}
+
+main .logo {
+    grid-area: 1/1/2/2;
+    background-image: url("images/Filato.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+main .usage {
+    grid-area: 1/2/2/6;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+main .usage .hardware {
+    display: flex;
+    justify-content: space-between;
+}
+
+main .usage .hardware > div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+main .usage .hardware .bar {
+    width: 200px;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 1000px;
+}
+
+main .usage .hardware .bar .internal-bar {
+    width: 0%;
+    height: 100%;
+    border-radius: inherit;
+    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    transition: 1s;
+}
+
+main .home {
+    grid-area: 2/1/10/3;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+main .home .screen {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    flex-grow: 1;
+    background-image: linear-gradient(90deg, #884bcdc9, #960a7ac9);
+    border-radius: 10px;
+}
+
+main .home .screen .tools {
+    padding: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    background-color: white;
+    border-radius: 10px;
+}
+
+main .home .screen #currentPage {
+    text-align: center;
+}
+
+main .home .screen .tools button {
+    background-color: transparent;
+    outline: none;
+    border: 0;
+    cursor: pointer;
+    font-size: 20px;
+    transition: 0.5s;
+}
+
+main .home .screen .tools button:hover {
+    color: transparent;
+    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-clip: text;
+}
+
+main .home .screen .data-box {
+    height: 100px;
+    flex-grow: 1;
+    background-color: white;
+    border-radius: 10px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    align-content: start;
+    gap: 10px;
+    overflow-y: auto;
+    padding: 30px;
+    position: relative;
+}
+
+main .home .screen .data-box .preview + .overlay {
+    display: none;
+}
+
+main .home .screen .data-box .preview {
+    width: 80%;
+    height: 80%;
+    background-color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 5;
+    border-radius: 10px;
+    padding: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+}
+
+main .home .screen .data-box .preview .title-block {
+    justify-content: space-between;
+}
+
+main .home .screen .data-box .preview .title-block button {
+    background-color: transparent;
+    border: 0;
+    outline: none;
+    cursor: pointer;
+}
+
+main .home .screen .data-box .preview textarea {
+    resize: none;
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 18px;
+    border-radius: 5px;
+    border: 2px solid;
+    outline: none;
+    transition: 0.3s;
+}
+
+main .home .screen .data-box .preview textarea:focus {
+    border-color: #884bcd;
+}
+
+main .home .screen .data-box .preview #saveButton {
+    padding: 10px 20px;
+    background-color: black;
+    color: white;
+    border-radius: 5px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+main .home .screen .data-box .preview #saveButton:hover {
+    background-color: transparent;
+    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+}
+
+main .home .screen .data-box .file, main .home .screen .data-box .folder {
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+    background-color: transparent;
+    border: none;
+    gap: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+main .home .screen .data-box .file:focus, main .home .screen .data-box .folder:focus {
+    background-color: rgba(104, 104, 255, 0.2);
+}
+
+main .home .screen .data-box .file i, main .home .screen .data-box .folder i {
+    font-size: 24px;
+    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-clip: text;
+    color: transparent;
+}
+
+main .tree {
+    grid-area: 2/3/10/5;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+main .tree p {
+    padding: 10px;
+    background-color: #ddd;
+    border-radius: 10px;
+}
+
+main .chart {
+    grid-area: 2/5/6/6;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+main .chart .chart-block{
+    flex-grow: 1;
+    position: relative;
+    z-index: 3;
+}
+
+main .log {
+    grid-area: 6/5/10/6;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+main .log #logData{
+    max-height: 200px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+}
+
+main .log #logData p {
+    padding: 10px;
+    background-color: #ddd;
+    border-radius: 10px;
+}

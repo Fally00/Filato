@@ -1,0 +1,247 @@
+//Loading Screen
+const loadingTag = document.querySelector(".loading")
+
+window.addEventListener("load" , () => {setTimeout(() => {
+    loadingTag.style.opacity = 0;
+    startUsage()
+}, 2500)})
+
+window.addEventListener("load" , () => {setTimeout(() => {
+    loadingTag.style.display = "none";
+}, 3000)})
+
+//Usage and Chart
+const cpuBar = document.querySelector("#CPU-internal-bar")
+const memoryBar = document.querySelector("#memory-internal-bar")
+const diskBar = document.querySelector("#disk-internal-bar")
+let dataArray = [];
+var CPU = {
+    tag: document.querySelector("#CPU-internal-bar"),
+    array: [0, 0, 0, 0, 0],
+}
+
+var memory = {
+    tag: document.querySelector("#memory-internal-bar"),
+    array: [0, 0, 0, 0, 0],
+}
+
+var disk = {
+    tag: document.querySelector("#disk-internal-bar"),
+    array: [0, 0, 0, 0, 0],
+}
+
+//chart
+var options = {
+  chart: {
+    type: 'line'
+  },
+  series: [{
+    name: 'CPU',
+    data: CPU.array,
+  }, {
+    name: 'Memory',
+    data: memory.array,
+  }, {
+    name: 'Disk',
+    data: disk.array,
+  }],
+  xaxis: {
+    categories: [0, 2, 4, 8, 10]
+  },
+  yaxis: {
+    // categories: [0, 50, 100]
+  }
+}
+
+var chart = new ApexCharts(document.querySelector(".chart-block"), options);
+
+chart.render();
+
+
+function startUsage() {
+    setInterval(() => {
+        setPercentage(CPU)
+        setPercentage(memory)
+        setPercentage(disk)
+    }, 2000)
+}
+
+function setPercentage(obj) {
+    const type = obj.tag.getAttribute("hardwareType");
+    const span = document.querySelector(`span[hardwareType="${type}"]`)
+    const value = Math.floor(Math.random() * (101 - 10)) + 10
+    obj.tag.style.width = `${value}%`
+    span.innerHTML = `${value}%`
+    obj.array.pop()
+    obj.array.unshift(value)
+
+    switch(obj) {
+      case CPU:
+        chart.updateSeries([{
+          name: options.series[0].name,
+          data: obj.array,
+        }, {
+          name: options.series[1].name,
+          data: options.series[1].data,
+        }, {
+          name: options.series[2].name,
+          data: options.series[2].data,
+        }], false)
+        break
+      case memory:
+        chart.updateSeries([{
+          name: options.series[0].name,
+          data: options.series[0].data,
+        }, {
+          name: options.series[1].name,
+          data: obj.array,
+        }, {
+          name: options.series[2].name,
+          data: options.series[2].data,
+        }], false)
+        break
+      case disk:
+        chart.updateSeries([{
+          name: options.series[0].name,
+          data: options.series[0].data,
+        }, {
+          name: options.series[1].name,
+          data: options.series[1].data,
+        }, {
+          name: options.series[2].name,
+          data: obj.array,
+        }], false)
+        break
+    }
+    
+}
+
+//Home
+const addFileButton = document.querySelector("#addFileButton")
+const addFolderButton = document.querySelector("#addFolderButton")
+const deleteButton = document.querySelector("#deleteButton")
+const currentPage = document.querySelector("#currentPage")
+let dataBox = document.querySelector(".data-box")
+const overlay = document.querySelector(".overlay")
+const message = document.querySelector(".message")
+const closeButton = document.querySelector("#closeButton")
+let valueInput = document.querySelector("#valueInput")
+const enterButton = document.querySelector("#enterButton")
+let filesAndFolders = []
+let names = []
+let current = null
+const logData = document.querySelector("#logData")
+const deleteFolderButton = document.querySelector("#deleteFolderButton")
+let treeItems = []
+const tree = document.querySelector(".tree")
+function appearMessage(event) {
+  console.log(event.target);
+  overlay.style.display = "initial"
+  message.style.display = "flex"
+  current = event.target.getAttribute("button-type")
+}
+
+enterButton.addEventListener("click", () => {
+  if(valueInput.value != "" && current == "addFile") {
+    createFile(valueInput.value)
+  } else if(valueInput.value != "" && current == "addFolder") {
+    createFolder(valueInput.value)
+  } else if(valueInput.value != "" && current == "delete") {
+    deletef(valueInput.value)
+  } else if(valueInput.value != "" && current == "deleteFolder") {
+    deleteFolder(valueInput.value)
+  }
+  hiddenMessage()
+  valueInput.value = ""
+  current = null
+})
+
+function hiddenMessage() {
+  overlay.style.display = "none"
+  message.style.display = "none"
+  valueInput.value = ""
+}
+
+closeButton.addEventListener("click", () => hiddenMessage())
+document.querySelector(".overlay").addEventListener("click", () => hiddenMessage())
+
+
+function createFile(name) {
+  if(names.indexOf(name + ".txt") == -1) {
+    name += ".txt"
+    var obj = {
+      current: currentPage.innerHTML,
+      name: name,
+      content: "",
+    }
+    filesAndFolders.push(obj)
+    names.push(obj.name)
+    dataBox.innerHTML += `<button class="file" name="${name}"><i class="bi bi-file-earmark"></i><p>${obj.name}</p></button>`
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
+    tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+  } else {
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #ff000087">The file already exist!!! ${date.toString()}</p>`
+  }
+  
+}
+
+function createFolder(name) {
+  if(names.indexOf(name) == -1) {
+    var objF = {
+      current: currentPage.innerHTML,
+      name: name,
+      content: [],
+    }
+    filesAndFolders.push(objF)
+    names.push(objF.name)
+    dataBox.innerHTML += `<button class="folder" name="${name}/d"><i class="bi bi-folder-fill"></i><p>${objF.name}</p></button>`
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
+    tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+  } else {
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #ff000087">The folder already exist!!! ${date.toString()}</p>`
+  }
+  
+}
+
+function deletef(name) {
+  if(names.indexOf(name) != -1) {
+    names[names.indexOf(name)] = ""
+    filesAndFolders[filesAndFolders.indexOf(name)] = ""
+    document.querySelector(`[name="${name}"]`).remove()
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Deleted Successfully ${date.toString()}</p>`
+    tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+  } else {
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
+  }
+}
+
+function deleteFolder(nameP) {
+  let name = nameP + "/d"
+  if(names.indexOf(name) != -1) {
+    names[names.indexOf(name)] = ""
+    filesAndFolders[filesAndFolders.indexOf(name)] = ""
+    document.querySelector(`[name="${name}"]`).remove()
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #07ff0087">${nameP} Created Successfully ${date.toString()}</p>`
+  } else {
+    const date = new Date()
+    logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
+  }
+}
+
+addFileButton.addEventListener("click", (event) => appearMessage(event))
+addFolderButton.addEventListener("click", (event) => appearMessage(event))
+deleteButton.addEventListener("click", (event) => appearMessage(event))
+deleteFolderButton.addEventListener("click", (event) => appearMessage(event))
+// filesAndFolders.forEach(element => {
+//   let name = element.name
+//   if(name.endsWith(".txt")) {
+    
+//   }
+// })

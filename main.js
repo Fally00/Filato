@@ -1,3 +1,7 @@
+window.addEventListener("click", event => {
+  console.log(event.target)
+})
+
 //Loading Screen
 const loadingTag = document.querySelector(".loading")
 
@@ -48,9 +52,9 @@ var options = {
   xaxis: {
     categories: [0, 2, 4, 8, 10]
   },
-  yaxis: {
-    // categories: [0, 50, 100]
-  }
+  // stroke: {
+  //   curve: 'smooth'
+  // }
 }
 
 var chart = new ApexCharts(document.querySelector(".chart-block"), options);
@@ -120,22 +124,28 @@ function setPercentage(obj) {
 const addFileButton = document.querySelector("#addFileButton")
 const addFolderButton = document.querySelector("#addFolderButton")
 const deleteButton = document.querySelector("#deleteButton")
+const deleteFolderButton = document.querySelector("#deleteFolderButton")
 const currentPage = document.querySelector("#currentPage")
 let dataBox = document.querySelector(".data-box")
 const overlay = document.querySelector(".overlay")
 const message = document.querySelector(".message")
-const closeButton = document.querySelector("#closeButton")
+const closeMessageButton = document.querySelector("#closeMessageButton")
 let valueInput = document.querySelector("#valueInput")
 const enterButton = document.querySelector("#enterButton")
-let filesAndFolders = []
+let files = []
+let folders = []
 let names = []
 let current = null
 const logData = document.querySelector("#logData")
-const deleteFolderButton = document.querySelector("#deleteFolderButton")
 let treeItems = []
 const tree = document.querySelector(".tree")
+const previewOverlay = document.querySelector("#previewOverlay")
+const preview = document.querySelector(".preview");
+const closePreviewButton = document.querySelector("#closePreviewButton")
+const previewInput = document.querySelector("#previewInput")
+const saveButton = document.querySelector("#saveButton")
+
 function appearMessage(event) {
-  console.log(event.target);
   overlay.style.display = "initial"
   message.style.display = "flex"
   current = event.target.getAttribute("button-type")
@@ -162,7 +172,7 @@ function hiddenMessage() {
   valueInput.value = ""
 }
 
-closeButton.addEventListener("click", () => hiddenMessage())
+closeMessageButton.addEventListener("click", () => hiddenMessage())
 document.querySelector(".overlay").addEventListener("click", () => hiddenMessage())
 
 
@@ -174,12 +184,23 @@ function createFile(name) {
       name: name,
       content: "",
     }
-    filesAndFolders.push(obj)
+    files.push(obj)
     names.push(obj.name)
-    dataBox.innerHTML += `<button class="file" name="${name}"><i class="bi bi-file-earmark"></i><p>${obj.name}</p></button>`
+    dataBox.innerHTML += `<button class="file" name="${name}" onClick="appearPreview()"><i class="bi bi-file-earmark"></i><p>${obj.name}</p></button>`
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-    tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    // files.forEach(file => {
+    //   let elements = document.querySelectorAll(`[name="${file.name}"]`);
+    //   elements.forEach(element => {
+    //     element.addEventListener("click", () => {
+    //       console.log("hi");
+    //       console.log(previewOverlay);
+          
+    //       appearPerview()
+    //     })
+    //   })
+    // })
   } else {
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #ff000087">The file already exist!!! ${date.toString()}</p>`
@@ -194,12 +215,12 @@ function createFolder(name) {
       name: name,
       content: [],
     }
-    filesAndFolders.push(objF)
+    folders.push(objF)
     names.push(objF.name)
-    dataBox.innerHTML += `<button class="folder" name="${name}/d"><i class="bi bi-folder-fill"></i><p>${objF.name}</p></button>`
+    dataBox.innerHTML += `<button class="folder" name="${name}"><i class="bi bi-folder-fill"></i><p>${objF.name}</p></button>`
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-    tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
   } else {
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #ff000087">The folder already exist!!! ${date.toString()}</p>`
@@ -208,27 +229,27 @@ function createFolder(name) {
 }
 
 function deletef(name) {
+  name += ".txt"
   if(names.indexOf(name) != -1) {
     names[names.indexOf(name)] = ""
-    filesAndFolders[filesAndFolders.indexOf(name)] = ""
+    files[files.indexOf(name)] = ""
     document.querySelector(`[name="${name}"]`).remove()
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #07ff0087">${name} Deleted Successfully ${date.toString()}</p>`
-    tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
   } else {
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
   }
 }
 
-function deleteFolder(nameP) {
-  let name = nameP + "/d"
+function deleteFolder(name) {
   if(names.indexOf(name) != -1) {
     names[names.indexOf(name)] = ""
-    filesAndFolders[filesAndFolders.indexOf(name)] = ""
+    folders[folders.indexOf(name)] = ""
     document.querySelector(`[name="${name}"]`).remove()
     const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${nameP} Created Successfully ${date.toString()}</p>`
+    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
   } else {
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
@@ -239,9 +260,21 @@ addFileButton.addEventListener("click", (event) => appearMessage(event))
 addFolderButton.addEventListener("click", (event) => appearMessage(event))
 deleteButton.addEventListener("click", (event) => appearMessage(event))
 deleteFolderButton.addEventListener("click", (event) => appearMessage(event))
-// filesAndFolders.forEach(element => {
-//   let name = element.name
-//   if(name.endsWith(".txt")) {
-    
-//   }
-// })
+console.log(files);
+
+function appearPreview() {
+  document.querySelector("#previewOverlay").style.display = "initial"
+  document.querySelector(".preview").style.display = "flex"
+}
+
+function hiddenPreview() {
+  console.log("h");
+  
+  document.querySelector("#previewOverlay").style.display = "none"
+  document.querySelector(".preview").style.display = "none"
+}
+
+document.querySelector("#closePreviewButton").addEventListener("click", () => hiddenPreview())
+document.querySelector("#previewOverlay").addEventListener("click", () => hiddenPreview())
+
+

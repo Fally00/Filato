@@ -19,7 +19,8 @@ It provides a desktop-like interface in the browser, allowing users to interact 
 
 - Structured and expandable architecture for future development
 ```
-This project serves as a foundation for learning interactive web applications and simulating desktop functionality in a browser environment.
+This project serves as a foundation for learning interactive web applications
+        & simulating desktop functionality in a browser environment.
 ```
 
 ## **Technology Stack** ##

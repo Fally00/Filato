@@ -144,6 +144,7 @@ const preview = document.querySelector(".preview");
 const closePreviewButton = document.querySelector("#closePreviewButton")
 const previewInput = document.querySelector("#previewInput")
 const saveButton = document.querySelector("#saveButton")
+let currentPreviewTag = null
 
 function appearMessage(event) {
   overlay.style.display = "initial"
@@ -186,21 +187,16 @@ function createFile(name) {
     }
     files.push(obj)
     names.push(obj.name)
-    dataBox.innerHTML += `<button class="file" name="${name}" onClick="appearPreview()"><i class="bi bi-file-earmark"></i><p>${obj.name}</p></button>`
+    const fileButton = document.createElement("button")
+    fileButton.classList.add("file")
+    fileButton.setAttribute("name", name)
+    fileButton.setAttribute("content", "")
+    fileButton.innerHTML = `<i class="bi bi-file-earmark"></i><p>${obj.name}</p>`
+    fileButton.addEventListener("click", (event) => appearPreview(event))
+    dataBox.append(fileButton)
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
     // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
-    // files.forEach(file => {
-    //   let elements = document.querySelectorAll(`[name="${file.name}"]`);
-    //   elements.forEach(element => {
-    //     element.addEventListener("click", () => {
-    //       console.log("hi");
-    //       console.log(previewOverlay);
-          
-    //       appearPerview()
-    //     })
-    //   })
-    // })
   } else {
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #ff000087">The file already exist!!! ${date.toString()}</p>`
@@ -217,7 +213,13 @@ function createFolder(name) {
     }
     folders.push(objF)
     names.push(objF.name)
-    dataBox.innerHTML += `<button class="folder" name="${name}"><i class="bi bi-folder-fill"></i><p>${objF.name}</p></button>`
+    const folderButton = document.createElement("button")
+    folderButton.classList.add("folder")
+    folderButton.setAttribute("name", objF.name)
+    folderButton.setAttribute("content", objF.content)
+    folderButton.innerHTML = `<i class="bi bi-folder-fill"></i><p>${objF.name}</p>`
+    folderButton.addEventListener("click", () => null)
+    dataBox.append(folderButton)
     const date = new Date()
     logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
     // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
@@ -262,19 +264,28 @@ deleteButton.addEventListener("click", (event) => appearMessage(event))
 deleteFolderButton.addEventListener("click", (event) => appearMessage(event))
 console.log(files);
 
-function appearPreview() {
-  document.querySelector("#previewOverlay").style.display = "initial"
-  document.querySelector(".preview").style.display = "flex"
+function appearPreview(event) {
+  console.log("text");
+  
+  previewOverlay.style.display = "initial"
+  preview.style.display = "flex"
+  currentPreviewTag = event.target
+  previewInput.value = currentPreviewTag.getAttribute("content")
 }
 
 function hiddenPreview() {
-  console.log("h");
-  
-  document.querySelector("#previewOverlay").style.display = "none"
-  document.querySelector(".preview").style.display = "none"
+  previewOverlay.style.display = "none"
+  preview.style.display = "none"
 }
 
-document.querySelector("#closePreviewButton").addEventListener("click", () => hiddenPreview())
-document.querySelector("#previewOverlay").addEventListener("click", () => hiddenPreview())
+function savePreviewValue() {
+  let value = previewInput.value
+  currentPreviewTag.setAttribute("content", value)
+  hiddenPreview()
+}
+
+closePreviewButton.addEventListener("click", () => hiddenPreview())
+previewOverlay.addEventListener("click", () => hiddenPreview())
+saveButton.addEventListener("click", () => savePreviewValue())
 
 

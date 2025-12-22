@@ -163,11 +163,6 @@ body {
     cursor: pointer;
 }
 
-.message .last-span {
-    color: gray;
-    font-style: italic;
-}
-
 main {
     height: 100%;
     display: grid;
@@ -255,6 +250,7 @@ main .home .screen .tools {
 
 main .home .screen #currentPage {
     text-align: center;
+    color: white;
 }
 
 main .home .screen .tools button {
@@ -263,10 +259,13 @@ main .home .screen .tools button {
     border: 0;
     cursor: pointer;
     font-size: 20px;
+}
+
+main .home .screen .tools button:not(:disabled) {
     transition: 0.5s;
 }
 
-main .home .screen .tools button:hover {
+main .home .screen .tools button:not(:disabled):hover {
     color: transparent;
     background-image: linear-gradient(90deg, #884bcd, #960a7a);
     background-clip: text;

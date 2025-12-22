@@ -4,9 +4,9 @@
 It provides a desktop-like interface in the browser, allowing users to interact with files, view system metrics, and navigate between different panels.
 
 **A live demo is available here**
-```
+
 [Filato](https://abdelrahmanshaalan.github.io/Filato/home.html)
-```
+
 ## **Overview** ##
 
 - Filato offers a minimal web desktop environment with the following functionality:

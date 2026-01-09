@@ -52,9 +52,6 @@ var options = {
   xaxis: {
     categories: [0, 2, 4, 8, 10]
   },
-  // stroke: {
-  //   curve: 'smooth'
-  // }
 }
 
 var chart = new ApexCharts(document.querySelector(".chart-block"), options);
@@ -176,6 +173,14 @@ function hiddenMessage() {
 closeMessageButton.addEventListener("click", () => hiddenMessage())
 document.querySelector(".overlay").addEventListener("click", () => hiddenMessage())
 
+function makeLog(name, text, color) {
+  const date = new Date()
+  const dateText = date.toUTCString()
+  const pTag = document.createElement("p")
+  pTag.style.backgroundColor = color
+  pTag.innerText = name + " " + text + " | Date: " + dateText
+  logData.prepend(pTag)
+}
 
 function createFile(name) {
   if(names.indexOf(name + ".txt") == -1) {
@@ -194,12 +199,9 @@ function createFile(name) {
     fileButton.innerHTML = `<i class="bi bi-file-earmark"></i><p>${obj.name}</p>`
     fileButton.addEventListener("click", (event) => appearPreview(event))
     dataBox.append(fileButton)
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    makeLog(name, "Created Successfully", "#07ff0087")
   } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">The file already exist!!! ${date.toString()}</p>`
+    makeLog("", "The file already exist!!!", "#ff000087")
   }
   
 }
@@ -220,12 +222,9 @@ function createFolder(name) {
     folderButton.innerHTML = `<i class="bi bi-folder-fill"></i><p>${objF.name}</p>`
     folderButton.addEventListener("click", () => null)
     dataBox.append(folderButton)
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    makeLog(name, "Created Successfully", "#07ff0087")
   } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">The folder already exist!!! ${date.toString()}</p>`
+    makeLog("", "The folder already exist!!!", "#ff000087")
   }
   
 }
@@ -236,12 +235,9 @@ function deletef(name) {
     names[names.indexOf(name)] = ""
     files[files.indexOf(name)] = ""
     document.querySelector(`[name="${name}"]`).remove()
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Deleted Successfully ${date.toString()}</p>`
-    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
+    makeLog(name, "Deleted Successfully", "#07ff0087")
   } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
+    makeLog("", "Not Exist!!!", "#ff000087")
   }
 }
 
@@ -250,11 +246,9 @@ function deleteFolder(name) {
     names[names.indexOf(name)] = ""
     folders[folders.indexOf(name)] = ""
     document.querySelector(`[name="${name}"]`).remove()
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
+    makeLog(name, "Deleted Successfully", "#07ff0087")
   } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
+    makeLog("", "Not Exist!!!", "#ff000087")
   }
 }
 

@@ -23,7 +23,7 @@ This project serves as a foundation for learning interactive web applications
         & simulating desktop functionality in a browser environment.
 ```
 
-## **Technology Stack** ##
+## **The tecnology used in Filato** ##
 
 - HTML5 – Structure of the application
 
@@ -32,6 +32,8 @@ This project serves as a foundation for learning interactive web applications
 - JavaScript – Core functionality and interactivity
 
 - Static assets (images/icons) for UI components
+
+- Bootstrap Icons and ApexCharts.js
 ```
 - The application is fully client-side and requires no backend.
 ```
@@ -56,4 +58,10 @@ Filato/
 └── README.md         # Project documentation
 ```
 
-Interact with the file editor and explore the available panels.
+## **Licence** ##
+
+Filato (MIT)
+
+Libraries used:
+- Bootstrap Icons (MIT)
+- ApexCharts.js (MIT)

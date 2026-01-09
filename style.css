@@ -14,6 +14,27 @@ body {
     height: 100vh;
     background-image: linear-gradient(90deg, #884bcd3b, #960a7a3b);
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+body .not-working {
+    width: 300px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: white;
+    border-radius: 20px;
+}
+
+body .not-working img {
+    width: 200px;
+}
+
+body .not-working h1 {
+    text-align: center;
 }
 
 .title-block {
@@ -165,9 +186,10 @@ body {
 
 main {
     height: 100%;
-    display: grid;
+    display: none;
     grid-template-columns: repeat(5, 1fr);
     gap: 30px;
+    flex-grow: 1;
 }
 
 main > div {
@@ -204,6 +226,10 @@ main .usage .hardware > div {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+main .usage .hardware > div .hardware-name {
+    width: 70px;
 }
 
 main .usage .hardware .bar {
@@ -422,4 +448,83 @@ main .log #logData p {
     padding: 10px;
     background-color: #ddd;
     border-radius: 10px;
+}
+
+@media (min-width: 768px) {
+    body .not-working {
+        display: none;
+    }
+
+    body main {
+        display: grid;
+    }
+}
+
+@media (max-width: 1028px) {
+    body {
+        padding: 30px;
+        min-height: 100vh;
+        height: initial;
+    }
+
+    body .loading {
+        position: fixed;
+    }
+
+    body .message {
+        width: initial;
+        position: fixed;
+    }
+
+    body .message .title-block {
+        align-items: start;
+    }
+
+    body main {
+        grid-template-columns: 1fr;
+    }
+
+    body main > div {
+        padding: 20px;
+    }
+
+    body main .logo {
+        grid-area: 1 / 1 / 2 / 2;
+    }
+
+    body main .usage {
+        grid-area: 2 / 1 / 4 / 2;
+    }
+
+    body main .usage .hardware {
+        flex-direction: column;
+    }
+
+    body main .usage .hardware > div {
+        justify-content: space-between;
+    }
+
+    body main .home {
+        grid-area: 4 / 1 / 8 / 2;
+    }
+
+    body main .home .screen .data-box {
+        height: 450px;
+    }
+
+    body main .tree {
+        grid-area: 8 / 1 / 12 / 2;
+    }
+
+    body main .chart {
+        grid-area: 12 / 1 / 14 / 2;
+    }
+
+    body main .chart .chart-block {
+        padding: 50px;
+    }
+
+    body main .log {
+        grid-area: 14 / 1 / 16 / 2;
+    }
 }

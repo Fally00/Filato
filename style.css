@@ -238,8 +238,10 @@ Title Block Component (used in multiple sections)
 main {
     height: 100%;
     display: none;
+    display: none;
     grid-template-columns: repeat(5, 1fr);
     gap: 30px;
+    flex-grow: 1;
     flex-grow: 1;
 }
 
@@ -290,6 +292,10 @@ main .usage .hardware > div {
     display: flex;
     align-items: center;
     gap: 10px;
+}
+
+main .usage .hardware > div .hardware-name {
+    width: 70px;
 }
 
 main .usage .hardware > div .hardware-name {

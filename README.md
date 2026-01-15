@@ -1,51 +1,37 @@
-## **Filato— Browser-Based File System Interface** ##
+# Filato
 
---> Filato is a lightweight web-based file system simulation built with HTML, CSS, and JavaScript.
-It provides a desktop-like interface in the browser, allowing users to interact with files, view system metrics, and navigate between different panels.
+Filato is a browser-based file system interface that simulates a lightweight desktop environment.  
+It allows users to manage files, monitor system resources, and interact with a structured UI — entirely on the client side.
 
-## **A live version is available** ##
+## Live Demo
 
---> [Filato](https://abdelrahmanshaalan.github.io/Filato/home.html)
+You Can test and interact with the full experaice here:
 
-## **Overview** ##
+[Filato](https://abdelrahmanshaalan.github.io/Filato/home.html)
 
-- Filato offers a minimal web desktop environment with the following functionality:
+## Overview
 
-- Edit and save text files (text.txt) directly in the browser
+Filato provides a desktop-like experience inside the browser, combining file management with simulated system monitoring.  
+All data is stored locally using the browser’s storage mechanisms, with no backend dependency.
 
-- Display simulated resource usage (CPU, memory, disk)
+## Features
 
-- Navigate through panels including Home, Desktop, Charts, and Logs
+- File and folder creation and deletion
+- Text file preview, editing, and persistence
+- Simulated CPU, memory, and disk usage
+- Resource usage visualization with charts
+- Activity logging system
+- Modular and extensible architecture
 
-- Structured and expandable architecture for future development
-```
-This project serves as a foundation for learning interactive web applications
-        & simulating desktop functionality in a browser environment.
-```
+## Technology Stack
 
-## **Technology Stack** ##
+- HTML5
+- CSS3
+- JavaScript (ES6)
+- ApexCharts
+- Browser Local Storage
 
-- HTML5 – Structure of the application
-
-- CSS3 – Styling and layout
-
-- JavaScript – Core functionality and interactivity
-
-- Static assets (images/icons) for UI components
-```
-- The application is fully client-side and requires no backend.
-```
-## **Features** ##
-
-- File Editor: Create, view, and edit a single text file.
-
-- Resource Panel: Monitor simulated system metrics.
-
-- Tabbed Navigation: Switch between multiple interface sections.
-
-- Extensible Design: Modular structure for easy addition of new features.
-
-### Project Structure
+## Project Structure
 ```
 Filato/
 ├── images/           # UI assets (icons, images)
@@ -55,26 +41,29 @@ Filato/
 ├── home.html         # Main interactive interface
 └── README.md         # Project documentation
 ```
-
-
-### Installation and Usage
+## Installation and Usage
 
 - To run Filato locally:
 
-- Clone the repository:
-```
-git clone https://github.com/AbdelrahmanShaalan/Filato.git
-```
+- Clone the repositorygit clone -> ( https://github.com/AbdelrahmanShaalan/Filato.git )
 
 - Open home.html in a web browser.
 
 - Optionally, serve via a local HTTP server:
 ```
-npx http-server .
-```
-```
-License
-
-This project is distributed under the MIT License, allowing for modification, redistribution, and personal or commercial use.
+npx http-server
 ```
 Interact with the file editor and explore the available panels.
+
+## Notes
+
+- This project is a simulation and does not interact with the real file system.
+
+- Resource usage values are generated dynamically for demonstration purposes.
+
+- Best experienced on tablet or desktop screens.
+
+## License
+
+This project is distributed under the MIT License, allowing for modification, redistribution, and personal or commercial use.
+

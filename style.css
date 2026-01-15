@@ -1,20 +1,88 @@
+/* ==========================================================================
+   CSS Variables & Reset
+   ========================================================================== */
+
+/*========================================
+CSS Custom Properties for consistent theming
+========================================*/
+
+:root {
+    --primary-gradient: linear-gradient(90deg, #884bcd, #960a7a);
+    --primary-gradient-light: linear-gradient(90deg, #884bcd3b, #960a7a3b);
+    --border-radius-sm: 5px;
+    --border-radius-md: 10px;
+    --border-radius-lg: 20px;
+    --border-radius-xl: 1000px;
+    --transition-fast: 0.3s;
+    --transition-normal: 0.5s;
+    --transition-slow: 1s;
+    --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --z-index-overlay: 4;
+    --z-index-modal: 5;
+}
+
+/*========================================
+       Global Reset & Base Styles
+========================================*/
+
 * {
     padding: 0;
     margin: 0;
     box-sizing: border-box;
 }
 
+/*========================================
+Prevent pointer events on button children for better interaction 
+========================================*/
+
 button * {
     pointer-events: none;
 }
+
+/* ==========================================================================
+   Typography & Body
+   ========================================================================== */
 
 body {
     font-family: "Cairo", sans-serif;
     padding: 50px 100px;
     height: 100vh;
-    background-image: linear-gradient(90deg, #884bcd3b, #960a7a3b);
+    background-image: var(--primary-gradient-light);
     position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+/* ==========================================================================
+   Mobile Warning Message
+   ========================================================================== */
+
+body .not-working {
+    width: 300px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: white;
+    border-radius: var(--border-radius-lg);
+}
+
+body .not-working img {
+    width: 200px;
+}
+
+body .not-working h1 {
+    text-align: center;
+}
+
+/* ==========================================================================
+   Reusable Components
+   ========================================================================== */
+
+/*========================================
+Title Block Component (used in multiple sections)
+========================================*/
 
 .title-block {
     display: flex;
@@ -24,9 +92,13 @@ body {
 .title-block i {
     font-size: 24px;
     color: transparent;
-    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-image: var(--primary-gradient);
     background-clip: text;
 }
+
+/*========================================
+        Loading Screen Component
+========================================*/
 
 .loading {
     width: 100%;
@@ -40,56 +112,47 @@ body {
     justify-content: center;
     align-items: center;
     gap: 20px;
-    transition: 0.5s;
-    z-index: 4;
+    transition: var(--transition-normal);
+    z-index: var(--z-index-overlay);
 }
 
 .loading img {
     width: 200px;
-    border-radius: 20px;
+    border-radius: var(--border-radius-lg);
 }
 
 .loading .circle {
     width: 75px;
     height: 75px;
-    border-radius: 1000px;
+    border-radius: var(--border-radius-xl);
     border: 7px solid #884bcd;
     border-top-color: transparent;
     position: relative;
-    animation: r 1s ease-in-out infinite;
+    animation: rotate 1s ease-in-out infinite;
 }
 
-.loading .circle::before {
-    content: "";
-    width: 7px;
-    height: 7px;
-    position: absolute;
-    top: 3px;
-    left: 3px;
-    background-color: #884bcd;
-    border-radius: 1000px;
-}
-
+.loading .circle::before,
 .loading .circle::after {
     content: "";
     width: 7px;
     height: 7px;
     position: absolute;
     top: 3px;
-    right: 3px;
     background-color: #884bcd;
-    border-radius: 1000px;
+    border-radius: var(--border-radius-xl);
 }
 
-@keyframes r  {
-    from {
-        rotate: 0deg;
-    }
+.loading .circle::before { left: 3px; }
+.loading .circle::after { right: 3px; }
 
-    to {
-        rotate: 360deg;
-    }
+@keyframes rotate {
+    from { rotate: 0deg; }
+    to { rotate: 360deg; }
 }
+
+/*========================================
+        Modal Overlay Component
+========================================*/
 
 .overlay {
     display: none;
@@ -99,8 +162,12 @@ body {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: var(--z-index-overlay);
 }
+
+/*========================================
+      Message/Input Modal Component
+========================================*/
 
 .message {
     display: none;
@@ -112,9 +179,9 @@ body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
+    z-index: var(--z-index-modal);
     padding: 30px;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
 }
 
 .message .title-block {
@@ -134,10 +201,10 @@ body {
     flex-grow: 1;
     padding: 5px 10px;
     font-size: 18px;
-    border-radius: 5px;
+    border-radius: var(--border-radius-sm);
     border: 2px solid;
     outline: none;
-    transition: 0.3s;
+    transition: var(--transition-fast);
 }
 
 .message .input-box #valueInput:focus {
@@ -148,13 +215,14 @@ body {
     padding: 10px 20px;
     background-color: black;
     color: white;
-    border-radius: 5px;
+    border-radius: var(--border-radius-sm);
     font-size: 16px;
+    transition: var(--transition-fast);
 }
 
 .message .input-box #enterButton:hover {
     background-color: transparent;
-    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-image: var(--primary-gradient);
 }
 
 .message button {
@@ -163,19 +231,34 @@ body {
     cursor: pointer;
 }
 
+/* ==========================================================================
+   Main Application Layout - Desktop
+   ========================================================================== */
+
 main {
     height: 100%;
-    display: grid;
+    display: none;
     grid-template-columns: repeat(5, 1fr);
     gap: 30px;
+    flex-grow: 1;
 }
 
+/*========================================
+  Common card styling for main sections
+========================================*/
 main > div {
     background-color: white;
-    border-radius: 20px;
+    border-radius: var(--border-radius-lg);
     padding: 30px;
 }
 
+/* ==========================================================================
+   Individual Main Sections
+   ========================================================================== */
+
+/*========================================
+            Logo Section
+========================================*/
 main .logo {
     grid-area: 1/1/2/2;
     background-image: url("images/Filato.png");
@@ -188,6 +271,9 @@ main .logo {
     align-items: center;
 }
 
+/*========================================
+        Resource Usage Section
+========================================*/
 main .usage {
     grid-area: 1/2/2/6;
     display: flex;
@@ -206,21 +292,28 @@ main .usage .hardware > div {
     gap: 10px;
 }
 
+main .usage .hardware > div .hardware-name {
+    width: 70px;
+}
+
 main .usage .hardware .bar {
     width: 200px;
     height: 20px;
     background-color: #ddd;
-    border-radius: 1000px;
+    border-radius: var(--border-radius-xl);
 }
 
 main .usage .hardware .bar .internal-bar {
     width: 0%;
     height: 100%;
     border-radius: inherit;
-    background-image: linear-gradient(90deg, #884bcd, #960a7a);
-    transition: 1s;
+    background-image: var(--primary-gradient);
+    transition: var(--transition-slow);
 }
 
+/*========================================
+        Home/Desktop Section
+========================================*/
 main .home {
     grid-area: 2/1/10/3;
     display: flex;
@@ -235,7 +328,7 @@ main .home .screen {
     padding: 20px;
     flex-grow: 1;
     background-image: linear-gradient(90deg, #884bcdc9, #960a7ac9);
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
 }
 
 main .home .screen .tools {
@@ -245,7 +338,7 @@ main .home .screen .tools {
     align-items: center;
     gap: 20px;
     background-color: white;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
 }
 
 main .home .screen #currentPage {
@@ -262,20 +355,23 @@ main .home .screen .tools button {
 }
 
 main .home .screen .tools button:not(:disabled) {
-    transition: 0.5s;
+    transition: var(--transition-normal);
 }
 
 main .home .screen .tools button:not(:disabled):hover {
     color: transparent;
-    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-image: var(--primary-gradient);
     background-clip: text;
 }
 
+/*========================================
+          File Browser/Data Box
+========================================*/
 main .home .screen .data-box {
     height: 100px;
     flex-grow: 1;
     background-color: white;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     align-content: start;
@@ -285,6 +381,9 @@ main .home .screen .data-box {
     position: relative;
 }
 
+/*========================================
+          File Preview Overlay
+========================================*/
 main .home .screen .data-box #previewOverlay {
     display: none;
     width: 100%;
@@ -293,7 +392,7 @@ main .home .screen .data-box #previewOverlay {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 4;
+    z-index: var(--z-index-overlay);
 }
 
 main .home .screen .data-box .preview {
@@ -305,8 +404,8 @@ main .home .screen .data-box .preview {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 5;
-    border-radius: 10px;
+    z-index: var(--z-index-modal);
+    border-radius: var(--border-radius-md);
     padding: 20px;
     flex-direction: column;
     gap: 20px;
@@ -328,10 +427,10 @@ main .home .screen .data-box .preview textarea {
     flex-grow: 1;
     padding: 10px;
     font-size: 18px;
-    border-radius: 5px;
+    border-radius: var(--border-radius-sm);
     border: 2px solid;
     outline: none;
-    transition: 0.3s;
+    transition: var(--transition-fast);
 }
 
 main .home .screen .data-box .preview textarea:focus {
@@ -342,18 +441,23 @@ main .home .screen .data-box .preview #saveButton {
     padding: 10px 20px;
     background-color: black;
     color: white;
-    border-radius: 5px;
+    border-radius: var(--border-radius-sm);
     font-size: 16px;
     border: none;
     cursor: pointer;
+    transition: var(--transition-fast);
 }
 
 main .home .screen .data-box .preview #saveButton:hover {
     background-color: transparent;
-    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-image: var(--primary-gradient);
 }
 
-main .home .screen .data-box .file, main .home .screen .data-box .folder {
+/*========================================
+        File and Folder Items
+========================================*/
+main .home .screen .data-box .file,
+main .home .screen .data-box .folder {
     padding: 10px 20px;
     display: flex;
     flex-direction: column;
@@ -361,20 +465,25 @@ main .home .screen .data-box .file, main .home .screen .data-box .folder {
     border: none;
     gap: 10px;
     cursor: pointer;
-    border-radius: 5px;
+    border-radius: var(--border-radius-sm);
 }
 
-main .home .screen .data-box .file:focus, main .home .screen .data-box .folder:focus {
+main .home .screen .data-box .file:focus,
+main .home .screen .data-box .folder:focus {
     background-color: rgba(104, 104, 255, 0.2);
 }
 
-main .home .screen .data-box .file i, main .home .screen .data-box .folder i {
+main .home .screen .data-box .file i,
+main .home .screen .data-box .folder i {
     font-size: 24px;
-    background-image: linear-gradient(90deg, #884bcd, #960a7a);
+    background-image: var(--primary-gradient);
     background-clip: text;
     color: transparent;
 }
 
+/*========================================
+            Tree View Section
+========================================*/
 main .tree {
     grid-area: 2/3/10/5;
     display: flex;
@@ -387,9 +496,12 @@ main .tree {
 main .tree p {
     padding: 10px;
     background-color: #ddd;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
 }
 
+/*========================================
+              Chart Section
+========================================*/
 main .chart {
     grid-area: 2/5/6/6;
     display: flex;
@@ -397,12 +509,15 @@ main .chart {
     gap: 10px;
 }
 
-main .chart .chart-block{
+main .chart .chart-block {
     flex-grow: 1;
     position: relative;
     z-index: 3;
 }
 
+/*========================================
+              Log Section
+========================================*/
 main .log {
     grid-area: 6/5/10/6;
     display: flex;
@@ -410,7 +525,7 @@ main .log {
     gap: 10px;
 }
 
-main .log #logData{
+main .log #logData {
     max-height: 200px;
     display: flex;
     flex-direction: column;
@@ -421,5 +536,109 @@ main .log #logData{
 main .log #logData p {
     padding: 10px;
     background-color: #ddd;
-    border-radius: 10px;
+    border-radius: var(--border-radius-md);
+}
+
+/* ==========================================================================
+   Responsive Design - Tablet & Mobile
+   ========================================================================== */
+
+@media (min-width: 768px) {
+    /* Hide mobile warning on tablet and larger */
+    body .not-working {
+        display: none;
+    }
+    
+    /*========================================
+      Show main layout on tablet and larger
+    ========================================*/
+
+    body main {
+        display: grid;
+    }
+}
+
+@media (max-width: 1028px) {
+
+    /*========================================
+          Tablet and Mobile adjustments 
+    ========================================*/
+
+    body {
+        padding: 30px;
+        min-height: 100vh;
+        height: initial;
+    }
+    
+    /*======================================== 
+    Fixed positioning for overlays on mobile 
+    ========================================*/
+    body .loading {
+        position: fixed;
+    }
+    
+    body .message {
+        width: initial;
+        position: fixed;
+    }
+    
+    body .message .title-block {
+        align-items: start;
+    }
+    
+    /*======================================== 
+           Stacked layout for mobile 
+    ========================================*/
+
+    body main {
+        grid-template-columns: 1fr;
+    }
+    
+    body main > div {
+        padding: 20px;
+    }
+    
+    /*========================================
+            Mobile grid areas
+    ========================================*/
+
+    body main .logo {
+        grid-area: 1 / 1 / 2 / 2;
+    }
+    
+    body main .usage {
+        grid-area: 2 / 1 / 4 / 2;
+    }
+    
+    body main .usage .hardware {
+        flex-direction: column;
+    }
+    
+    body main .usage .hardware > div {
+        justify-content: space-between;
+    }
+    
+    body main .home {
+        grid-area: 4 / 1 / 8 / 2;
+    }
+    
+    body main .home .screen .data-box {
+        height: 450px;
+    }
+    
+    body main .tree {
+        grid-area: 8 / 1 / 12 / 2;
+    }
+    
+    body main .chart {
+        grid-area: 12 / 1 / 14 / 2;
+    }
+    
+    body main .chart .chart-block {
+        padding: 50px;
+    }
+    
+    body main .log {
+        grid-area: 14 / 1 / 16 / 2;
+    }
 }

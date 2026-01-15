@@ -17,6 +17,10 @@
     <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 </head>
 <body>
+    <div class="not-working">
+        <img src="images/undraw_access-denied_krem.svg" alt="Not working">
+        <h2>Filato is currently not working on mobile devices (working on the tablet or larger).</h2>
+    </div>
     <div class="overlay"></div>
     <div class="loading">
         <img src="images/Filato.png" alt="logo">
@@ -31,7 +35,6 @@
             <input id="valueInput" type="text">
             <button id="enterButton">Enter</button>
         </div>
-        <!-- <span class="last-span">*If rename button is clicked already, type like "old = new"<br>**If delete button is clicked already, type "/d" after folder name like "folder1/d" to delete a folder</span> -->
     </div>
     <main>
         <div class="logo"></div>
@@ -42,21 +45,21 @@
             </div>
             <div class="hardware">
                 <div class="CPU">
-                    CPU:
+                    <span class="hardware-name">CPU:</span>
                     <div class="bar">
                         <div class="internal-bar" id="CPU-internal-bar"  hardwareType="CPU"></div>
                     </div>
                     <span id="CPU-percentage"  hardwareType="CPU">00%</span>
                 </div>
                 <div class="memory">
-                    Memory:
+                    <span class="hardware-name">Memory:</span>
                     <div class="bar">
                         <div class="internal-bar" id="memory-internal-bar" hardwareType="memory"></div>
                     </div>
                     <span id="memory-percentage" hardwareType="memory">00%</span>
                 </div>
                 <div class="disk">
-                    disk:
+                    <span class="hardware-name">disk:</span>
                     <div class="bar">
                         <div class="internal-bar" id="disk-internal-bar" hardwareType="disk"></div>
                     </div>

@@ -1,291 +1,524 @@
-window.addEventListener("click", event => {
-  console.log(event.target)
-})
+/* ==========================================================================
+   Filato File System - Main Application Logic
+   ========================================================================== */
 
-//Loading Screen
-const loadingTag = document.querySelector(".loading")
+/* ==========================================================================
+   Configuration & Constants
+   ========================================================================== */
 
-window.addEventListener("load" , () => {setTimeout(() => {
-    loadingTag.style.opacity = 0;
-    startUsage()
-}, 2500)})
+const CONFIG = {
+    LOADING_DURATION: 2500,
+    LOADING_HIDE_DELAY: 3000,
+    USAGE_UPDATE_INTERVAL: 2000,
+    CHART_DATA_POINTS: 5,
+    MAX_LOG_ENTRIES: 50
+};
 
-window.addEventListener("load" , () => {setTimeout(() => {
-    loadingTag.style.display = "none";
-}, 3000)})
+const SELECTORS = {
 
-//Usage and Chart
-const cpuBar = document.querySelector("#CPU-internal-bar")
-const memoryBar = document.querySelector("#memory-internal-bar")
-const diskBar = document.querySelector("#disk-internal-bar")
-let dataArray = [];
-var CPU = {
-    tag: document.querySelector("#CPU-internal-bar"),
-    array: [0, 0, 0, 0, 0],
-}
+    // Loading
 
-var memory = {
-    tag: document.querySelector("#memory-internal-bar"),
-    array: [0, 0, 0, 0, 0],
-}
+    LOADING: '.loading',
+    
+    // Resource Usage
 
-var disk = {
-    tag: document.querySelector("#disk-internal-bar"),
-    array: [0, 0, 0, 0, 0],
-}
+    CPU_BAR: '#CPU-internal-bar',
+    MEMORY_BAR: '#memory-internal-bar',
+    DISK_BAR: '#disk-internal-bar',
+    CPU_PERCENTAGE: '#CPU-percentage',
+    MEMORY_PERCENTAGE: '#memory-percentage',
+    DISK_PERCENTAGE: '#disk-percentage',
+    
+    // Home Screen
 
-//chart
-var options = {
-  chart: {
-    type: 'line'
-  },
-  series: [{
-    name: 'CPU',
-    data: CPU.array,
-  }, {
-    name: 'Memory',
-    data: memory.array,
-  }, {
-    name: 'Disk',
-    data: disk.array,
-  }],
-  xaxis: {
-    categories: [0, 2, 4, 8, 10]
-  },
-  // stroke: {
-  //   curve: 'smooth'
-  // }
-}
+    CURRENT_PAGE: '#currentPage',
+    DATA_BOX: '.data-box',
+    
+    // Modals & Overlays
 
-var chart = new ApexCharts(document.querySelector(".chart-block"), options);
+    OVERLAY: '.overlay',
+    MESSAGE: '.message',
+    VALUE_INPUT: '#valueInput',
+    ENTER_BUTTON: '#enterButton',
+    CLOSE_MESSAGE_BUTTON: '#closeMessageButton',
+    
+    // Preview System
 
-chart.render();
+    PREVIEW_OVERLAY: '#previewOverlay',
+    PREVIEW: '.preview',
+    CLOSE_PREVIEW_BUTTON: '#closePreviewButton',
+    PREVIEW_INPUT: '#previewInput',
+    SAVE_BUTTON: '#saveButton',
+    
+    // Action Buttons
 
+    ADD_FILE_BUTTON: '#addFileButton',
+    ADD_FOLDER_BUTTON: '#addFolderButton',
+    DELETE_BUTTON: '#deleteButton',
+    DELETE_FOLDER_BUTTON: '#deleteFolderButton',
+    
+    // Log System
 
-function startUsage() {
-    setInterval(() => {
-        setPercentage(CPU)
-        setPercentage(memory)
-        setPercentage(disk)
-    }, 2000)
-}
+    LOG_DATA: '#logData',
+    
+    // Tree View
 
-function setPercentage(obj) {
-    const type = obj.tag.getAttribute("hardwareType");
-    const span = document.querySelector(`span[hardwareType="${type}"]`)
-    const value = Math.floor(Math.random() * (101 - 10)) + 10
-    obj.tag.style.width = `${value}%`
-    span.innerHTML = `${value}%`
-    obj.array.pop()
-    obj.array.unshift(value)
+    TREE: '.tree'
+};
 
-    switch(obj) {
-      case CPU:
-        chart.updateSeries([{
-          name: options.series[0].name,
-          data: obj.array,
-        }, {
-          name: options.series[1].name,
-          data: options.series[1].data,
-        }, {
-          name: options.series[2].name,
-          data: options.series[2].data,
-        }], false)
-        break
-      case memory:
-        chart.updateSeries([{
-          name: options.series[0].name,
-          data: options.series[0].data,
-        }, {
-          name: options.series[1].name,
-          data: obj.array,
-        }, {
-          name: options.series[2].name,
-          data: options.series[2].data,
-        }], false)
-        break
-      case disk:
-        chart.updateSeries([{
-          name: options.series[0].name,
-          data: options.series[0].data,
-        }, {
-          name: options.series[1].name,
-          data: options.series[1].data,
-        }, {
-          name: options.series[2].name,
-          data: obj.array,
-        }], false)
-        break
+/* ==========================================================================
+   Application State Management
+   ========================================================================== */
+
+const APP_STATE = {
+    currentAction: null,
+    currentPreviewTag: null,
+    files: [],
+    folders: [],
+    usedNames: [],
+    currentPath: ['Desktop']
+};
+
+/* ==========================================================================
+   Resource Monitoring System
+   ========================================================================== */
+
+class ResourceMonitor {
+    constructor() {
+        this.cpu = {
+            tag: document.querySelector(SELECTORS.CPU_BAR),
+            data: new Array(CONFIG.CHART_DATA_POINTS).fill(0),
+            percentage: document.querySelector(SELECTORS.CPU_PERCENTAGE)
+        };
+        
+        this.memory = {
+            tag: document.querySelector(SELECTORS.MEMORY_BAR),
+            data: new Array(CONFIG.CHART_DATA_POINTS).fill(0),
+            percentage: document.querySelector(SELECTORS.MEMORY_PERCENTAGE)
+        };
+        
+        this.disk = {
+            tag: document.querySelector(SELECTORS.DISK_BAR),
+            data: new Array(CONFIG.CHART_DATA_POINTS).fill(0),
+            percentage: document.querySelector(SELECTORS.DISK_PERCENTAGE)
+        };
+        
+        this.chart = null;
+        this.initChart();
     }
     
-}
+      //Initialize the ApexCharts instance for resource monitoring
 
-//Home
-const addFileButton = document.querySelector("#addFileButton")
-const addFolderButton = document.querySelector("#addFolderButton")
-const deleteButton = document.querySelector("#deleteButton")
-const deleteFolderButton = document.querySelector("#deleteFolderButton")
-const currentPage = document.querySelector("#currentPage")
-let dataBox = document.querySelector(".data-box")
-const overlay = document.querySelector(".overlay")
-const message = document.querySelector(".message")
-const closeMessageButton = document.querySelector("#closeMessageButton")
-let valueInput = document.querySelector("#valueInput")
-const enterButton = document.querySelector("#enterButton")
-let files = []
-let folders = []
-let names = []
-let current = null
-const logData = document.querySelector("#logData")
-let treeItems = []
-const tree = document.querySelector(".tree")
-const previewOverlay = document.querySelector("#previewOverlay")
-const preview = document.querySelector(".preview");
-const closePreviewButton = document.querySelector("#closePreviewButton")
-const previewInput = document.querySelector("#previewInput")
-const saveButton = document.querySelector("#saveButton")
-let currentPreviewTag = null
-
-function appearMessage(event) {
-  overlay.style.display = "initial"
-  message.style.display = "flex"
-  current = event.target.getAttribute("button-type")
-}
-
-enterButton.addEventListener("click", () => {
-  if(valueInput.value != "" && current == "addFile") {
-    createFile(valueInput.value)
-  } else if(valueInput.value != "" && current == "addFolder") {
-    createFolder(valueInput.value)
-  } else if(valueInput.value != "" && current == "delete") {
-    deletef(valueInput.value)
-  } else if(valueInput.value != "" && current == "deleteFolder") {
-    deleteFolder(valueInput.value)
-  }
-  hiddenMessage()
-  valueInput.value = ""
-  current = null
-})
-
-function hiddenMessage() {
-  overlay.style.display = "none"
-  message.style.display = "none"
-  valueInput.value = ""
-}
-
-closeMessageButton.addEventListener("click", () => hiddenMessage())
-document.querySelector(".overlay").addEventListener("click", () => hiddenMessage())
-
-
-function createFile(name) {
-  if(names.indexOf(name + ".txt") == -1) {
-    name += ".txt"
-    var obj = {
-      current: currentPage.innerHTML,
-      name: name,
-      content: "",
+    initChart() {
+        const options = {
+            chart: { type: 'line' },
+            series: [
+                { name: 'CPU', data: this.cpu.data },
+                { name: 'Memory', data: this.memory.data },
+                { name: 'Disk', data: this.disk.data }
+            ],
+            xaxis: { categories: [0, 2, 4, 8, 10] }
+        };
+        
+        this.chart = new ApexCharts(document.querySelector('.chart-block'), options);
+        this.chart.render();
     }
-    files.push(obj)
-    names.push(obj.name)
-    const fileButton = document.createElement("button")
-    fileButton.classList.add("file")
-    fileButton.setAttribute("name", name)
-    fileButton.setAttribute("content", "")
-    fileButton.innerHTML = `<i class="bi bi-file-earmark"></i><p>${obj.name}</p>`
-    fileButton.addEventListener("click", (event) => appearPreview(event))
-    dataBox.append(fileButton)
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
-  } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">The file already exist!!! ${date.toString()}</p>`
-  }
-  
-}
+    
+      //Update resource percentages and chart data
 
-function createFolder(name) {
-  if(names.indexOf(name) == -1) {
-    var objF = {
-      current: currentPage.innerHTML,
-      name: name,
-      content: [],
+    updateResource(resource) {
+        const value = Math.floor(Math.random() * (101 - 10)) + 10;
+        
+        // Update progress bar
+
+        resource.tag.style.width = `${value}%`;
+        resource.percentage.textContent = `${value}%`;
+        
+        // Update data array (FIFO)
+
+        resource.data.pop();
+        resource.data.unshift(value);
+        
+        this.updateChart();
     }
-    folders.push(objF)
-    names.push(objF.name)
-    const folderButton = document.createElement("button")
-    folderButton.classList.add("folder")
-    folderButton.setAttribute("name", objF.name)
-    folderButton.setAttribute("content", objF.content)
-    folderButton.innerHTML = `<i class="bi bi-folder-fill"></i><p>${objF.name}</p>`
-    folderButton.addEventListener("click", () => null)
-    dataBox.append(folderButton)
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
-  } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">The folder already exist!!! ${date.toString()}</p>`
-  }
-  
+    
+      //Update the chart with current resource data
+
+    updateChart() {
+        this.chart.updateSeries([
+            { name: 'CPU', data: this.cpu.data },
+            { name: 'Memory', data: this.memory.data },
+            { name: 'Disk', data: this.disk.data }
+        ], false);
+    }
+    
+      //Start continuous resource monitoring
+
+    startMonitoring() {
+        setInterval(() => {
+            this.updateResource(this.cpu);
+            this.updateResource(this.memory);
+            this.updateResource(this.disk);
+        }, CONFIG.USAGE_UPDATE_INTERVAL);
+    }
 }
 
-function deletef(name) {
-  name += ".txt"
-  if(names.indexOf(name) != -1) {
-    names[names.indexOf(name)] = ""
-    files[files.indexOf(name)] = ""
-    document.querySelector(`[name="${name}"]`).remove()
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Deleted Successfully ${date.toString()}</p>`
-    // tree.innerHTML += `<p name="${name}-tree">${name}</p>`
-  } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
-  }
+/* ==========================================================================
+   File System Management
+   ========================================================================== */
+
+class FileSystemManager {
+    constructor() {
+        this.loadFromStorage();
+    }
+    
+     //Load files and folders from localStorage
+
+    loadFromStorage() {
+        APP_STATE.files = JSON.parse(localStorage.getItem('filato-files')) || [];
+        APP_STATE.folders = JSON.parse(localStorage.getItem('filato-folders')) || [];
+        APP_STATE.usedNames = [
+            ...APP_STATE.files.map(file => file.name),
+            ...APP_STATE.folders.map(folder => folder.name)
+        ];
+    }
+    
+      //Save current state to localStorage
+
+    saveToStorage() {
+        localStorage.setItem('filato-files', JSON.stringify(APP_STATE.files));
+        localStorage.setItem('filato-folders', JSON.stringify(APP_STATE.folders));
+    }
+    
+     //Check if a name is already used
+
+    isNameTaken(name) {
+        return APP_STATE.usedNames.includes(name);
+    }
+    
+      //Create a new file
+
+    createFile(name) {
+        if (this.isNameTaken(name + '.txt')) {
+            this.log(`${name}.txt already exists!`, 'error');
+            return false;
+        }
+        
+        const fileName = name + '.txt';
+        const file = {
+            current: APP_STATE.currentPath.join('/'),
+            name: fileName,
+            content: ''
+        };
+        
+        APP_STATE.files.push(file);
+        APP_STATE.usedNames.push(fileName);
+        this.saveToStorage();
+        
+        this.renderFile(file);
+        this.log(`${fileName} created successfully`, 'success');
+        return true;
+    }
+    
+      //Create a new folder
+
+    createFolder(name) {
+        if (this.isNameTaken(name)) {
+            this.log(`${name} already exists!`, 'error');
+            return false;
+        }
+        
+        const folder = {
+            current: APP_STATE.currentPath.join('/'),
+            name: name,
+            content: []
+        };
+        
+        APP_STATE.folders.push(folder);
+        APP_STATE.usedNames.push(name);
+        this.saveToStorage();
+        
+        this.renderFolder(folder);
+        this.log(`${name} created successfully`, 'success');
+        return true;
+    }
+    
+      // Delete a file
+
+    deleteFile(name) {
+        const fileName = name + '.txt';
+        const index = APP_STATE.usedNames.indexOf(fileName);
+        
+        if (index === -1) {
+            this.log(`File ${fileName} not found!`, 'error');
+            return false;
+        }
+        
+        APP_STATE.usedNames[index] = '';
+        APP_STATE.files = APP_STATE.files.filter(file => file.name !== fileName);
+        this.saveToStorage();
+        
+        document.querySelector(`[name="${fileName}"]`)?.remove();
+        this.log(`${fileName} deleted successfully`, 'success');
+        return true;
+    }
+    
+      // Delete a folder
+
+    deleteFolder(name) {
+        const index = APP_STATE.usedNames.indexOf(name);
+        
+        if (index === -1) {
+            this.log(`Folder ${name} not found!`, 'error');
+            return false;
+        }
+        
+        APP_STATE.usedNames[index] = '';
+        APP_STATE.folders = APP_STATE.folders.filter(folder => folder.name !== name);
+        this.saveToStorage();
+        
+        document.querySelector(`[name="${name}"]`)?.remove();
+        this.log(`${name} deleted successfully`, 'success');
+        return true;
+    }
+    
+    //Render a file element in the data box
+    
+    renderFile(file) {
+        const fileButton = document.createElement('button');
+        fileButton.className = 'file';
+        fileButton.setAttribute('name', file.name);
+        fileButton.setAttribute('content', file.content);
+        fileButton.innerHTML = `<i class="bi bi-file-earmark"></i><p>${file.name}</p>`;
+        fileButton.addEventListener('click', (event) => this.showPreview(event));
+        
+        document.querySelector(SELECTORS.DATA_BOX).appendChild(fileButton);
+    }
+
+    //Render a folder element in the data box
+    
+    renderFolder(folder) {
+        const folderButton = document.createElement('button');
+        folderButton.className = 'folder';
+        folderButton.setAttribute('name', folder.name);
+        folderButton.setAttribute('content', folder.content);
+        folderButton.innerHTML = `<i class="bi bi-folder-fill"></i><p>${folder.name}</p>`;
+        folderButton.addEventListener('click', () => this.navigateToFolder(folder.name));
+        
+        document.querySelector(SELECTORS.DATA_BOX).appendChild(folderButton);
+    }
+
+    //Navigate to a folder (placeholder for future implementation)
+    
+    navigateToFolder(folderName) {
+        this.log(`Navigation to ${folderName} clicked`, 'info');
+        // TODO: Implement folder navigation
+    }
+    
+      //Log messages to the log system
+    
+      log(message, type = 'info') {
+        const colors = {
+            success: '#07ff0087',
+            error: '#ff000087',
+            info: '#ddd'
+        };
+        
+        const date = new Date();
+        const logEntry = document.createElement('p');
+        logEntry.style.backgroundColor = colors[type] || colors.info;
+        logEntry.textContent = `${message} | Date: ${date.toUTCString()}`;
+        
+        const logContainer = document.querySelector(SELECTORS.LOG_DATA);
+        logContainer.prepend(logEntry);
+        
+        // Limit log entries
+        if (logContainer.children.length > CONFIG.MAX_LOG_ENTRIES) {
+            logContainer.removeChild(logContainer.lastChild);
+        }
+    }
 }
 
-function deleteFolder(name) {
-  if(names.indexOf(name) != -1) {
-    names[names.indexOf(name)] = ""
-    folders[folders.indexOf(name)] = ""
-    document.querySelector(`[name="${name}"]`).remove()
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #07ff0087">${name} Created Successfully ${date.toString()}</p>`
-  } else {
-    const date = new Date()
-    logData.innerHTML += `<p style="background-color: #ff000087">Not Exist!!! ${date.toString()}</p>`
-  }
+/* ==========================================================================
+   Modal & UI Management
+   ========================================================================== */
+
+class UIManager {
+    constructor(fileSystem) {
+        this.fileSystem = fileSystem;
+        this.bindEvents();
+    }
+    
+      // Bind event listeners to UI elements
+    
+      bindEvents() {
+        // Action buttons
+        document.querySelector(SELECTORS.ADD_FILE_BUTTON).addEventListener('click', (e) => this.showInputModal(e));
+        document.querySelector(SELECTORS.ADD_FOLDER_BUTTON).addEventListener('click', (e) => this.showInputModal(e));
+        document.querySelector(SELECTORS.DELETE_BUTTON).addEventListener('click', (e) => this.showInputModal(e));
+        document.querySelector(SELECTORS.DELETE_FOLDER_BUTTON).addEventListener('click', (e) => this.showInputModal(e));
+        
+        // Modal controls
+        document.querySelector(SELECTORS.CLOSE_MESSAGE_BUTTON).addEventListener('click', () => this.hideInputModal());
+        document.querySelector(SELECTORS.OVERLAY).addEventListener('click', () => this.hideInputModal());
+        document.querySelector(SELECTORS.ENTER_BUTTON).addEventListener('click', () => this.handleInput());
+        
+        // Preview controls
+        document.querySelector(SELECTORS.CLOSE_PREVIEW_BUTTON).addEventListener('click', () => this.hidePreview());
+        document.querySelector(SELECTORS.PREVIEW_OVERLAY).addEventListener('click', () => this.hidePreview());
+        document.querySelector(SELECTORS.SAVE_BUTTON).addEventListener('click', () => this.savePreview());
+    }
+    
+      // Show input modal for various actions
+      
+    showInputModal(event) {
+        APP_STATE.currentAction = event.target.getAttribute('button-type');
+        
+        document.querySelector(SELECTORS.OVERLAY).style.display = 'block';
+        document.querySelector(SELECTORS.MESSAGE).style.display = 'flex';
+        document.querySelector(SELECTORS.VALUE_INPUT).focus();
+    }
+    
+    // Hide input modal
+
+    hideInputModal() {
+        document.querySelector(SELECTORS.OVERLAY).style.display = 'none';
+        document.querySelector(SELECTORS.MESSAGE).style.display = 'none';
+        document.querySelector(SELECTORS.VALUE_INPUT).value = '';
+        APP_STATE.currentAction = null;
+    }
+    
+     // Handle input submission from modal
+
+    handleInput() {
+        const input = document.querySelector(SELECTORS.VALUE_INPUT);
+        const value = input.value.trim();
+        
+        if (!value) return;
+        
+        switch (APP_STATE.currentAction) {
+            case 'addFile':
+                this.fileSystem.createFile(value);
+                break;
+            case 'addFolder':
+                this.fileSystem.createFolder(value);
+                break;
+            case 'delete':
+                this.fileSystem.deleteFile(value);
+                break;
+            case 'deleteFolder':
+                this.fileSystem.deleteFolder(value);
+                break;
+        }
+        
+        this.hideInputModal();
+    }
+    
+     // Show file preview
+
+    showPreview(event) {
+        APP_STATE.currentPreviewTag = event.target.closest('.file');
+        
+        document.querySelector(SELECTORS.PREVIEW_OVERLAY).style.display = 'block';
+        document.querySelector(SELECTORS.PREVIEW).style.display = 'flex';
+        
+        const content = APP_STATE.currentPreviewTag?.getAttribute('content') || '';
+        document.querySelector(SELECTORS.PREVIEW_INPUT).value = content;
+    }
+    
+     // Hide file preview
+
+    hidePreview() {
+        document.querySelector(SELECTORS.PREVIEW_OVERLAY).style.display = 'none';
+        document.querySelector(SELECTORS.PREVIEW).style.display = 'none';
+        APP_STATE.currentPreviewTag = null;
+    }
+    
+      //Save changes made in the preview modal
+
+    savePreview() {
+        if (!APP_STATE.currentPreviewTag) return;
+        
+        const content = document.querySelector(SELECTORS.PREVIEW_INPUT).value;
+        APP_STATE.currentPreviewTag.setAttribute('content', content);
+        
+        // Update file content in storage
+        const fileName = APP_STATE.currentPreviewTag.getAttribute('name');
+        const file = APP_STATE.files.find(f => f.name === fileName);
+        if (file) {
+            file.content = content;
+            this.fileSystem.saveToStorage();
+        }
+        
+        this.hidePreview();
+        this.fileSystem.log(`${fileName} saved successfully`, 'success');
+    }
 }
 
-addFileButton.addEventListener("click", (event) => appearMessage(event))
-addFolderButton.addEventListener("click", (event) => appearMessage(event))
-deleteButton.addEventListener("click", (event) => appearMessage(event))
-deleteFolderButton.addEventListener("click", (event) => appearMessage(event))
-console.log(files);
+/* ==========================================================================
+   Application Initialization
+   ========================================================================== */
 
-function appearPreview(event) {
-  console.log("text");
-  
-  previewOverlay.style.display = "initial"
-  preview.style.display = "flex"
-  currentPreviewTag = event.target
-  previewInput.value = currentPreviewTag.getAttribute("content")
+class FilatoApp {
+    constructor() {
+        this.resourceMonitor = new ResourceMonitor();
+        this.fileSystem = new FileSystemManager();
+        this.uiManager = new UIManager(this.fileSystem);
+        this.init();
+    }
+    
+    
+     //Initialize the application
+     
+    init() {
+        this.setupLoadingScreen();
+        this.renderExistingFiles();
+    }
+    
+    
+    //Setup loading screen transition
+     
+    setupLoadingScreen() {
+        const loadingTag = document.querySelector(SELECTORS.LOADING);
+        
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                loadingTag.style.opacity = '0';
+                this.resourceMonitor.startMonitoring();
+            }, CONFIG.LOADING_DURATION);
+            
+            setTimeout(() => {
+                loadingTag.style.display = 'none';
+            }, CONFIG.LOADING_HIDE_DELAY);
+        });
+    }
+    
+    
+     //Render existing files and folders from storage
+     
+
+    renderExistingFiles() {
+        APP_STATE.files.forEach(file => this.fileSystem.renderFile(file));
+        APP_STATE.folders.forEach(folder => this.fileSystem.renderFolder(folder));
+    }
 }
 
-function hiddenPreview() {
-  previewOverlay.style.display = "none"
-  preview.style.display = "none"
-}
+/* ==========================================================================
+   Debugging & Development Utilities
+   ========================================================================== */
 
-function savePreviewValue() {
-  let value = previewInput.value
-  currentPreviewTag.setAttribute("content", value)
-  hiddenPreview()
-}
+// Log all click events for debugging (can be removed in production)
 
-closePreviewButton.addEventListener("click", () => hiddenPreview())
-previewOverlay.addEventListener("click", () => hiddenPreview())
-saveButton.addEventListener("click", () => savePreviewValue())
+window.addEventListener("click", event => {
+    console.log("Click event target:", event.target);
+});
 
+/* ==========================================================================
+   Application Startup
+   ========================================================================== */
 
+// Initialize the application when DOM is ready
+
+document.addEventListener('DOMContentLoaded', () => {
+    new FilatoApp();
+});

@@ -11,8 +11,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap" rel="stylesheet">
 
-    <script src="main.js" defer></script>
-
     <style>
         * {
             padding: 0;
@@ -55,7 +53,7 @@
         }
 
         .start-menu p {
-            color: gray;
+            color: #5f5f5f;
         }
 
         .start-menu a {
@@ -76,6 +74,26 @@
         .start-menu a:hover {
             background-color: #884bcda1;
         }
+
+        .start-menu span {
+            text-align: center;
+            color: #5f5f5f;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 425px) {
+            body {
+                padding: 0 30px;
+            }
+
+            .start-menu {
+                width: initial;
+            }
+
+            .start-menu img {
+                width: 275px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -84,6 +102,7 @@
         <h1>Welcome to <span>Filato</span></h1>
         <p>Your File System & Resource Monitor</p>
         <a href="home.html">Start</a>
+        <span>*Filato is currently just a simulation of usage rates and the process of saving files and folder that can be saved in the local memory in the browser (to be present when you open Filato again after closing the browser).</span>
     </div>
 </body>
 </html>
